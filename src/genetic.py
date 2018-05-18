@@ -1,4 +1,5 @@
 from random import randint, shuffle, random, sample
+from fitness import Score
 
 class Candidate:
     def __init__(self, words, max_words = 500):
@@ -15,7 +16,7 @@ class Candidate:
     # train neural network on headlines and cross validate, returning the
     # accuracy as the fitness for the genetic algorithm
     def _calculate_accuracy(self):
-        return sum([ord(w) for w in self.words])
+        return Score(self.words)
   
     # return randomly mutated version of a candidate
     def mutate(self, num_mutations, all_words):
@@ -79,6 +80,7 @@ class GeneticAlgorithm:
             next_gen[i].mutate_in_place(randint(1, self.max_mutations_per), self.words) 
         
         self.population = next_gen
+
 
 #all_words = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', \
 #             'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', \
