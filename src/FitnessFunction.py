@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.neural_network import MLPClassifier
 
 
-def FitnessScore(WordList, Headlines, Labels):    
+def Score(WordList, Headlines, Labels):    
 
     X=[]
     for headline in Headlines:
