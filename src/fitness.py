@@ -1,17 +1,18 @@
 import numpy as np
 from sklearn.neural_network import MLPClassifier
+import globVars
 
-
-def Score(WordList, Headlines, Labels):    
+def Score(WordList):    
 
     X=[]
-    for headline in Headlines:
+    for headline in globVars.Headlines:
         headlineOneHot = [1 if word in headline else 0 for word in WordList]
         X.append(headlineOneHot)
 
     y=[]
-    for category in np.unique(Labels):
-        labelOneHot = [1 if label==category else 0 for label in Labels]
+    unique = np.unique(globVars.Labels)
+    for label in globVars.Labels:
+        labelOneHot = [1 if label==category else 0 for category in unique]
         y.append(labelOneHot)
 
     clf = MLPClassifier(solver='lbfgs', alpha=1e-5,

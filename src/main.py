@@ -1,35 +1,17 @@
-import pandas as pd
 import genetic as gen
-
-
-
-def CreateData(path):
-    df = pd.read_csv(path,names=['Labels','Headlines'])
-    Labels = list(df["Labels"])
-    Headlines = list(df["Headlines"])
-
-    all_words = []
-    for row in Headlines:
-        for word in row.split():
-            if word not in all_words:
-                all_words.append(word)
-
-    return Labels, Headlines, all_words
-            
+import globVars
     
 path = "/Users/Nico/Documents/GitHub/headline_classifier/data/headlines.csv"
 
-Labels, Headlines, all_words = CreateData(path)
-            
+globVars.init(path) 
+
 ga = gen.GeneticAlgorithm(
-    Labels,
-    Headlines,
-    all_words,
+    globVars.AllWords,
     population_size = 25, 
     elite_size = 3,
     num_to_mutate = 7,
     max_mutations_per = 5,
-    num_words_per_candidate = 3)
+    num_words_per_candidate = 10)
 
 for _ in range(20):
     ga.create_next_gen()
