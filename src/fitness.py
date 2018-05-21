@@ -1,52 +1,60 @@
 import numpy as np
 from sklearn.neural_network import MLPClassifier
-import globVars
 import random
+import globVars
 
-shuffle = False
+def sample(data,ratio):
+    random.shuffle(data)
+    split = int(len(data)*ratio)
+    train = data[:split]
+    test = data[split:]
+    return train, test
 
 def Score(WordList):
+
     training_ratio = 0.7
-    num_headlines = 6000
     X=[]
     y=[]
     
-    sample = globVars.sample(num_headlines)
-    raw_x, raw_y = zip(*sample)
-    unique = np.unique(raw_y)
-    for (headline, label) in globVars.sample(num_headlines):
+
+    for (headline, label) in globVars.zipped:
         headlineOneHot = [1 if word in headline else 0 for word in WordList]
-        # remove the headlines where no words match
-        if sum(headlineOneHot) > 0:
-            labelOneHot = [1 if label==category else 0 for category in unique]
-            X.append(headlineOneHot)
-            y.append(labelOneHot)
+        labelOneHot = [1 if label==category else 0 for category in globVars.Categories]
+        X.append(headlineOneHot)
+        y.append(labelOneHot)
     
     
-    #for headline in raw_x:
-    #    headlineOneHot = [1 if word in headline else 0 for word in WordList]
-    #    X.append(headlineOneHot)
-    
-    #for label in raw_y:
-    #    labelOneHot = [1 if label==category else 0 for category in unique]
-    #    y.append(labelOneHot)
-    
+    train, test = sample(list(zip(X,y)),training_ratio)
+
+    Xtrain = []
+    ytrain = []
+    for (X,y) in train:
+        Xtrain.append(X)
+        ytrain.append(y)
+        
+    Xtest= []
+    ytest = []
+    for (X,y) in test:
+        Xtest.append(X)
+        ytest.append(y)
+
+        
     clf = MLPClassifier(
         solver = 'sgd',
         alpha = 1e-5,
-        hidden_layer_sizes = (800,),
+        hidden_layer_sizes = (2,),
         random_state = 1,
         activation = 'logistic',
         learning_rate = 'adaptive')
     print('Fitting %d points...' % len(y))
-    num_training = int(len(y) * training_ratio)
     
-    clf.fit(X[0:num_training], y[0:num_training])   
+    clf.fit(Xtrain, ytrain)   
 
     print('Validating....')
-    prediction = clf.predict(X[num_training:])
+
+    prediction = clf.predict(Xtest)
     
-    diff = y[num_training:]-prediction
+    diff = ytest-prediction
     
     total_error = np.sum([np.sum(np.abs(row)) for row in diff])
     
@@ -55,7 +63,8 @@ def Score(WordList):
     print('Accuracy =', score)
     return score
 
-
+# Currently creates subset to test and train on based on the existance of any 
+# of the "500 words", should train on all 500 and test on all the rest
 
 # (We know that W should be 0.1 and b 0.3, but Tensorflow will
 # figure that out for us.)

@@ -1,7 +1,7 @@
 import genetic as gen
 import globVars
-    
-path = "data/headlines.csv"
+
+path = "/Users/Nico/Documents/GitHub/headline_classifier/data/headlines2.csv"
 
 print('init...')
 globVars.init(path) 
@@ -9,11 +9,11 @@ print('init done.')
 
 ga = gen.GeneticAlgorithm(
     globVars.AllWords,
-    population_size = 25, 
-    elite_size = 3,
-    num_to_mutate = 7,
-    max_mutations_per = 5,
-    num_words_per_candidate = 800)
+    population_size = 30, 
+    elite_size = 5,
+    num_to_mutate = 15,
+    max_mutations_per = 10,
+    num_words_per_candidate = 20)
 
 for _ in range(20):
     ga.create_next_gen()

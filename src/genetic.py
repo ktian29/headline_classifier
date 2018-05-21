@@ -2,7 +2,7 @@ from random import randint, shuffle, random, sample
 from fitness import Score
 
 class Candidate:
-    def __init__(self, words, max_words = 500):
+    def __init__(self, words, max_words = 20):
         self.words = words
         self.max_words = max_words
         self.fitness = None
