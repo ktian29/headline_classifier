@@ -42,7 +42,7 @@ def Score(WordList):
     clf = MLPClassifier(
         solver = 'sgd',
         alpha = 1e-5,
-        hidden_layer_sizes = (2,),
+        hidden_layer_sizes = (20,),
         random_state = 1,
         activation = 'logistic',
         learning_rate = 'adaptive')

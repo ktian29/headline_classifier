@@ -1,7 +1,7 @@
 import genetic as gen
 import globVars
 
-path = "/Users/Nico/Documents/GitHub/headline_classifier/data/headlines2.csv"
+path = "./data/headlines2.csv"
 
 print('init...')
 globVars.init(path) 
