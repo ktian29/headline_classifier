@@ -3,7 +3,7 @@ from fitness import Score
 
 class Candidate:
     def __init__(self, words, max_words = 20):
-        self.words = words
+        self.words = set(words)
         self.max_words = max_words
         self.fitness = None
   
@@ -20,19 +20,23 @@ class Candidate:
   
     # return randomly mutated version of a candidate
     def mutate(self, num_mutations, all_words):
-        new_words = self.words[:]
+        new_words = list(self.words)
         for _ in range(0, num_mutations):
             new_words[randint(0, len(new_words)) - 1] = all_words[randint(0, len(all_words)) - 1]
         return Candidate(new_words)
     
     # mutate mutably
     def mutate_in_place(self, num_mutations, all_words):
+        new_words = list(self.words)
         for _ in range(0, num_mutations):
-            self.words[randint(0, len(self.words)) - 1] = all_words[randint(0, len(all_words)) - 1]
+            new_words[randint(0, len(new_words)) - 1] = all_words[randint(0, len(all_words)) - 1]
+        self.words = set(new_words)
+        #for _ in range(0, num_mutations):
+        #    self.words[randint(0, len(self.words)) - 1] = all_words[randint(0, len(all_words)) - 1]
         
     # return crossover of self and other
     def crossover(self, other):
-        all_words = list(set(self.words) | set(other.words))
+        all_words = list(self.words | other.words)
         shuffle(all_words)
         if len(all_words) > self.max_words:
             return Candidate(all_words[0:self.max_words], self.max_words)
@@ -58,8 +62,11 @@ class GeneticAlgorithm:
     
     def create_next_gen(self):
         self.population.sort(reverse = True)
-        for c in self.population:
-            print(c.words, c.get_fitness())
+        NUM_PRINT = 1
+        for i in range(NUM_PRINT):
+            print('%s: %f' % (' '.join(sorted(self.population[i].words)), self.population[i].get_fitness()))
+        #for c in self.population:
+        #    print(c.words, c.get_fitness())
         # a fixed number of 'elites,' the best ones, survive automatically
         next_gen = self.population[0:self.elite_size]
         others = self.population[self.elite_size:]

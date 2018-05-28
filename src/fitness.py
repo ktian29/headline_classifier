@@ -1,66 +1,40 @@
 import numpy as np
 from sklearn.neural_network import MLPClassifier
+from sklearn.linear_model import LogisticRegression
+
+from sklearn.model_selection import train_test_split
 import random
 import globVars
 
-def sample(data,ratio):
-    random.shuffle(data)
-    split = int(len(data)*ratio)
-    train = data[:split]
-    test = data[split:]
-    return train, test
-
 def Score(WordList):
-
     training_ratio = 0.7
-    X=[]
-    y=[]
+    X = []
+    y = [globVars.Categories.index(label) for label in globVars.Labels]
     
 
-    for (headline, label) in globVars.zipped:
-        headlineOneHot = [1 if word in headline else 0 for word in WordList]
-        labelOneHot = [1 if label==category else 0 for category in globVars.Categories]
+    for headline in globVars.Headlines:
+        headlineOneHot = [int(word in headline) for word in WordList]
         X.append(headlineOneHot)
-        y.append(labelOneHot)
     
+    Xtrain, Xtest, ytrain, ytest = train_test_split(X, y, test_size = training_ratio, random_state = 0)
     
-    train, test = sample(list(zip(X,y)),training_ratio)
-
-    Xtrain = []
-    ytrain = []
-    for (X,y) in train:
-        Xtrain.append(X)
-        ytrain.append(y)
-        
-    Xtest= []
-    ytest = []
-    for (X,y) in test:
-        Xtest.append(X)
-        ytest.append(y)
-
-        
     clf = MLPClassifier(
-        solver = 'sgd',
-        alpha = 1e-5,
-        hidden_layer_sizes = (20,),
+        solver = 'lbfgs',
+        hidden_layer_sizes = (50,),
         random_state = 1,
         activation = 'logistic',
         learning_rate = 'adaptive')
-    print('Fitting %d points...' % len(y))
-    
-    clf.fit(Xtrain, ytrain)   
 
-    print('Validating....')
+    clf.fit(Xtrain, ytrain)
+    
+    probs_of_each_category = clf.predict_proba(Xtest)
+    predictions = [list(values).index(max(values)) for values in probs_of_each_category]
 
-    prediction = clf.predict(Xtest)
-    
-    diff = ytest-prediction
-    
-    total_error = np.sum([np.sum(np.abs(row)) for row in diff])
-    
-    size = len(diff)*len(diff[0])
-    score = total_error/size
-    print('Accuracy =', score)
+    correct = 0
+    for i in range(0, len(ytest)):
+        if predictions[i] == ytest[i]:
+            correct += 1
+    score = correct / len(ytest)
     return score
 
 # Currently creates subset to test and train on based on the existance of any 

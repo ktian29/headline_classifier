@@ -7,9 +7,11 @@ def init(path):
     global Labels, Headlines, zipped, AllWords, Categories
     Labels = list(df["Labels"])
     Headlines = list(df["Headlines"])
-    Categories = np.unique(Labels)
+    Categories = list(np.unique(Labels))
     zipped = list(zip(Headlines, Labels))
     AllWords = []
     for headline in Headlines:
         for word in headline.split(' '):
-            AllWords.append(word)
+            word = ''.join(filter(str.isalpha, word))
+            if len(word) > 1:
+                AllWords.append(word)
